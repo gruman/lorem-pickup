@@ -1,28 +1,36 @@
-const lines = require('../constants/lines');
-
+const cow = require('../constants/cow');
+const pickup = require('../constants/pickup.json')
+const rock = require('../constants/rock.json')
+const mental = require('../constants/mental.json')
 function getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
 }
 
+exports.getLines = (req, res) => {
+  let lines = [];
 
-exports.generate = (req, res, next) => {
-  let lines = this.getLines(req, res, req.body.number)
-  lines = this.getNerves(req, res, req.body.number)
-};
-
-exports.getNerves = (req, res, number) => {
-  let num = 10;
-  if (number) {
-    num = number;
+  const num = req.body.num;
+  const type = req.body.type;
+  const nervous = req.body.nervous;
+  console.log(nervous)
+  if (type === "cows") {
+    lines = cow;
+  } else if (type ==="pickup") {
+    lines = pickup;
+  } else if (type === "rock") {
+    lines = rock;
+  }else if (type === "mental") {
+    lines = mental;
+  } else {
+    lines = cow;
   }
   let newWords = "";
   for (let i = 0; i < num; i++) {
     newWords += lines[getRandomInt(0, lines.length)] + " ";
-
-    if (getRandomInt(0, 3) == 1) {
-      let rand = getRandomInt(0, 7);
+    if (nervous) {
+      let rand = getRandomInt(0, 8);
       switch (rand) {
         case 0:
           newWords += "Er... Uh... ";
@@ -50,25 +58,9 @@ exports.getNerves = (req, res, number) => {
           break;
       }
     }
-
     if (i % 4 == 0 && i != 0 && getRandomInt(0, 2) == 1) {
       newWords += "\n\n";
     }
   }
-  return (newWords)
-}
-exports.getLines = (req, res, number) => {
-  let num = 10;
-  if (number) {
-    num = number
-  }
-  let newWords = "";
-  for (let i = 0; i < num; i++) {
-    newWords += lines[getRandomInt(0, lines.length)] + " ";
-
-    if (i % 4 == 0 && i != 0 && getRandomInt(0, 2) == 1) {
-      newWords += "\n\n";
-    }
-  }
-  return (newWords);
+  res.send(newWords);
 }

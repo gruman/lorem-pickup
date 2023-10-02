@@ -1,22 +1,24 @@
-const path = require('path');
-
 const express = require('express');
-const bodyParser = require('body-parser');
-
-const app = express();
-
-app.set('view engine', 'ejs');
-app.set('views', 'views');
-
-const publicRoutes = require('./routes/public');
-
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.use(publicRoutes);
+const app = express()
+var bodyParser = require('body-parser')
+const port = 3000;
+const cors = require('cors')
+app.use(cors())
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json());
 
 app.use((req, res, next) => {
-  res.status(404).render('404', { pageTitle: 'Page Not Found' });
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  next();
 });
 
-app.listen(3000);
+const publicRoutes = require('./routes/public')
+
+
+app.use('/',publicRoutes)
+app.listen(port, () => {
+
+  console.log(`Example app listening on port ${port}`)
+})
